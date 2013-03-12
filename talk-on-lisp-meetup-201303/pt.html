@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>title</title>
+    <link href="google-code-prettify/prettify.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div id="page-wrap">
+      <pre class="prettyprint lang-clj">
+(defn app [req]
+  {:status  200
+   :headers {"Content-Type" "text/html"}
+   :body    "hello HTTP!"})
+(run-server app {:port 8080})
+</pre>
+    </div>
+    <script src="google-code-prettify/prettify.js"></script>
+    <script src="google-code-prettify/lang-clj.js"></script>
+    <script>prettyPrint();</script>
+    <!-- <script src="google-code-prettify/run_prettify.js"></script> -->
+  </body>
+</html>

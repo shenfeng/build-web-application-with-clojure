@@ -1,0 +1,8 @@
+slides > slide {
+    color: #333;
+}
+
+slides > slide  sub {
+    color: #777;
+    font-size: smaller;
+}

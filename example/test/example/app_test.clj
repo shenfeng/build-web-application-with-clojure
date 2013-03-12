@@ -7,8 +7,8 @@
                         :uri "/"})]
     (is (= 200 (:status resp)))))
 
-(deftest test-landing-page
-  (let [resp (test-app {:request-method :get
-                        :uri "/api/time"})]
+(deftest test-get-time
+  (let [resp ((site all-routes) {:request-method :get
+                                 :uri "/api/time"})]
     (is (= 200 (:status resp)))
-    (is (-> resp :body read-json :time))))
+    (is (re-find #"important" (:body resp)))))

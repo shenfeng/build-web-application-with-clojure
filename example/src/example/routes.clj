@@ -4,7 +4,8 @@
                          [params :only [wrap-params]]
                          [session :only [wrap-session]])
         [example.middleware :only [wrap-failsafe wrap-request-logging-in-dev
-                                         wrap-reload-in-dev JGET JPUT JPOST JDELETE]])
+                                   wrap-req-bind
+                                   wrap-reload-in-dev JGET JPUT JPOST JDELETE]])
   (:require [example.handlers.app :as app]
             [example.handlers.api :as api]
             [compojure.route :as route]))
@@ -12,6 +13,7 @@
 ;; define mapping here
 (defroutes server-routes*
   (GET "/" [] app/show-landing)
+  (JGET "/request-map" [] (fn [req] {:body (dissoc req :async-channel)}))
   (context "/api" []
            ;; JGET returns json encoding of the response
            (JGET "/time" [] api/get-time))
@@ -21,10 +23,12 @@
   ;; 404, modify for a better 404 page
   (route/not-found "<p>Page not found.</p>" ))
 
-(def server-routes (-> server-routes*
-                       wrap-session
-                       wrap-keyword-params
-                       wrap-params
-                       wrap-request-logging-in-dev
-                       wrap-reload-in-dev
-                       wrap-failsafe))
+(defn app []
+  (-> server-routes*
+      wrap-session
+      wrap-keyword-params
+      wrap-params
+      wrap-request-logging-in-dev
+      wrap-reload-in-dev
+      wrap-req-bind
+      wrap-failsafe))

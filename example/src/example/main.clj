@@ -5,7 +5,7 @@
         ;; database access
         ;; [org.httpkit.dbcp :only [use-database! close-database!]]
         [org.httpkit.server :only [run-server]]
-        [example.routes :only [server-routes]]
+        [example.routes :only [app]]
         [clojure.tools.logging :only [info]]))
 
 (defn- to-int [s] (Integer/parseInt s))
@@ -21,8 +21,8 @@
   ;; (db/use-database! "jdbc:mysql://localhost/test" "user" "password")
 
   ;; other init staff, like init-db, init-redis, ...
-  (reset! server (run-server #'server-routes {:port (cfg :port)
-                                              :thread (cfg :thread)})))
+  (reset! server (run-server (app) {:port (cfg :port)
+                                    :thread (cfg :thread)})))
 
 (defn -main [& args]
   (let [[options _ banner]
@@ -34,5 +34,6 @@
     (when (:help options) (println banner) (System/exit 0))
     ;; config can be accessed by (cfg :key)
     (swap! app-configs merge options)
+    (println app-configs)
     (start-server)
     (info (str "server started. listen on 0.0.0.0@" (cfg :port)))))

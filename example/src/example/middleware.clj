@@ -2,7 +2,8 @@
   (:use [compojure.core :only [GET POST DELETE PUT]]
         [clojure.tools.logging :only [debug error info]]
         [example.config :as conf]
-        [clojure.data.json :only [write-str]]))
+        [clojure.data.json :only [write-str]])
+  (:require [example.tmpls]))
 
 (defn wrap-failsafe [handler]
   (fn [req]
@@ -31,6 +32,12 @@
       (require :reload 'example.tmpls) ; reload templates
       (handler req))
     handler))
+
+(defn wrap-req-bind [handler]
+  (fn [req]
+    (let [req (assoc req :start-time (System/currentTimeMillis))]
+      (binding [example.tmpls/*req* req]
+        (handler req)))))
 
 (defn wrap-json [handler]
   (fn [req]

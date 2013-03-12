@@ -6,3 +6,25 @@ slides > slide  sub {
     color: #777;
     font-size: smaller;
 }
+
+body {
+    font: 400 14px/1.431 'Lucida Grande', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+}
+
+#mustache {
+    color: #000;
+    height: 180px;
+    width: 200px;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    /* text-align: center; */
+    display: block;
+    font-size: 190px;
+    font-family: Georgia;
+    line-height: 1;
+    margin: -100px 0 30px 0;
+    /* margin-top: -100px; */
+    /* margin: 0 auto; */
+    /* float: left; */
+}

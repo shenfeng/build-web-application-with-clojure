@@ -110,40 +110,53 @@
         </article>
       </slide>
       <slide>
+        <hgroup><h2>HTTP Abstraction: Ring</h2></hgroup>
+        <article>
+          <p>
+            <a href="https://github.com/ring-clojure/ring">
+              https://github.com/ring-clojure/ring
+            </a>
+          </p>
+          <ul>
+            <li>request map</li>
+            <li>response map</li>
+            <li>handler</li>
+            <li>middleware</li>
+            <li>adapter</li>
+          </ul>
+        </article>
+      </slide>
+      <slide>
         <hgroup>
-          <h2>HTTP Abstraction: Ring</h2>
+          <h2>Request/Response map, handler, adapter</h2>
         </hgroup>
         <article>
-          <h3>Map, Handler, adapter</h3>
           <pre class="prettyprint" data-lang="clj">
 (defn handler [req]
-  (let [uri (:uri req)
-        method (:request-method req)
-        params (:params req)
-        name (:name req)]
+  (let [params (-> req :params :name)]
     {:status 200
      :headers {"Content-Type" "text/html; charset=utf8"}
      :body (str "Hello, " name)}))
 
 (run-server handler {:port 8080})
           </pre>
+          <a href="http://localhost:8080/request-map">request map example</a>
         </article>
       </slide>
       <slide>
         <hgroup>
-          <h2>HTTP Abstraction: Ring</h2>
+          <h2>Middleware</h2>
         </hgroup>
         <article>
-          <h3>Middleware</h3>
           <pre class="prettyprint" data-lang="clj">
 (defn handler [req]
   (let [params (:params req)
         name (:name req)]
-    {:message "Hello, " name}))
+    {:message (str "Hello, " name ", " (:custom-key req}))
 
 (defn wrap-json-response [handler]
   (fn [req]
-    (let [data (handler req)]
+    (let [data (handler (assoc req :custom-key "value"))]
       {:status 200
        :headers {"Content-Type" "application/json"}
        :body (json-str data)})))
@@ -164,7 +177,7 @@
 (defroutes all-routes
   (GET "/" [] show-landing-page)
   (POST "/upload" [] upload-handelr)
-  (route/files "/static/")
+  (route/files "/static/" {:root "public"})
   (route/not-found "Page not found"))
 
 (run-server (site all-routes) {:port 8080})          </pre>
@@ -179,64 +192,105 @@
           <ul>
             <li>Enlive CSS selector based: https://github.com/cgrand/enlive</li>
             <li>Using Clojure: https://github.com/weavejester/hiccup</li>
-            <li>Template: Mustache</li>
+            <pre class="prettyprint" data-lang="clj">
+(html [:div#foo.bar.baz "bang"])
+=>
+&lt;div id="foo" class="bar baz"&gt;bang&lt;/div&gt;
+            </pre>
+            <li>Mustache</li>
+            <span id="mustache">}</span>
+            <pre class="prettyprint" data-lang="clj">
+ Hello {{name}}! + {:name "Mustache"}
+       =>
+ Hello Mustache!
+            </pre>
           </ul>
         </article>
       </slide>
       <slide>
         <hgroup>
-          <h2>Slide with Bullets that Build</h2>
-          <h3>Subtitle Placeholder</h3>
+          <h2>Mustache for Clojure</h2>
         </hgroup>
         <article>
-          <p>A list where items build:</p>
-          <ul class="build">
-            <li>Pressing 'h' highlights code snippets</li>
-            <li>Pressing 'p' toggles speaker notes (if they're on the current slide)</li>
-            <li>Pressing 'f' toggles fullscreen viewing</li>
-            <li>Pressing 'w' toggles widescreen</li>
-            <li>Pressing 'o' toggles overview mode</li>
-            <li>Pressing 'ESC' toggles off these goodies</li>
-          </ul>
-          <p>Another list, but items fade as they build:</p>
-          <ul class="build fade">
-            <li>Hover over me!</li>
-            <li>Hover over me!</li>
-            <li>Hover over me!</li>
-          </ul>
-        </article>
-      </slide>
-
-      <slide>
-        <hgroup>
-          <h2>Slide with (Smaller Font)</h2>
-        </hgroup>
-        <article class="smaller">
           <ul>
-            <li>All <a href="http://google.com">links</a> open in new tabs.</li>
-            <li>To change that this, add <code>target="_self"</code> to the link.</li>
+            <li>https://github.com/fhd/clostache</li>
+            <li>https://github.com/shenfeng/mustache.clj</li>
           </ul>
+          <p>Generate Clojure function from template folder:</p>
+          <pre class="prettyprint" data-lang="clj">
+(gen-tmpls-from-resources "templates" [".tpl"])
+(m-landing {:name "Mustache"})
+          </pre>
+          <pre class="prettyprint" >
+templates
+├── admin.tpl                => admin
+├── login.tpl                => login
+├── m
+│   ├── landing.tpl          => m-landing
+│   ├── p_header.tpl         => m-p-header
+└── tmpls
+    ├── app
+    │   ├── feed_content.tpl => tmpls-app-feed-content
+          </pre>
         </article>
       </slide>
-
-      <slide hidden>
-        Hidden slides are left out of the presentation.
-      </slide>
-
       <slide>
         <hgroup>
-          <h2>Code Slide (with Subtitle Placeholder)</h2>
-          <h3>Subtitle Placeholder</h3>
+          <h2>Unit test</h2>
         </hgroup>
         <article>
-          <p>Press 'h' to highlight important sections of code (wrapped in <code>&lt;b&gt;</code>).</p>
+          <p>Handler is a function, accept request, return response</p>
           <pre class="prettyprint" data-lang="clj">
-            (defn app [req]
-            {:status  200
-            :headers {"Content-Type" "text/html"}
-            :body    "hello HTTP!"})
-            (run-server app {:port 8080})
+(deftest test-get-time
+  (let [resp ((site all-routes) {:request-method :get
+                                 :uri "/api/time"})]
+    (is (= 200 (:status resp)))
+    (is (re-find #"important" (:body resp)))))
           </pre>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>Redis</h2>
+        </hgroup>
+        <article>
+          <p><a href="https://github.com/ptaoussanis/carmine">
+              https://github.com/ptaoussanis/carmine
+          </a></p>
+          <pre class="prettyprint" data-lang="clj">
+(:require [taoensso.carmine :as car])
+(def pool         (car/make-conn-pool)) ;
+(def spec-server1 (car/make-conn-spec)) ;
+(defmacro wcar [& body] `(car/with-conn pool spec-server1 ~@body))
+
+(wcar (car/ping)
+      (car/set "foo" "bar")
+      (car/get "foo"))
+=> ["PONG" "OK" "bar"]
+          </pre>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>Database</h2>
+        </hgroup>
+        <article>
+          <h4>ORM</h4>
+          <ul>
+            <li><a href="http://sqlkorma.com/">http://sqlkorma.com/</a></li>
+            <li><a href="http://clojureql.org/">http://clojureql.org/</a></li>
+          </ul>
+          <h4>JDBC</h4>
+          <ul>
+            <li><a href="https://github.com/clojure/java.jdbc">
+                https://github.com/clojure/java.jdbc</a>
+            </li>
+            <li>
+              <a href="https://github.com/http-kit/dbcp.clj">
+                https://github.com/http-kit/dbcp.clj
+              </a>
+            </li>
+          </ul>
         </article>
       </slide>
 

@@ -3,7 +3,7 @@
   (:use [example.config :only [app-configs cfg]]
         [clojure.tools.cli :only [cli]]
         ;; database access
-        ;; [org.httpkit.dbcp :only [use-database! close-database!]]
+        [org.httpkit.dbcp :only [use-database! close-database!]]
         [org.httpkit.server :only [run-server]]
         [example.routes :only [app]]
         [clojure.tools.logging :only [info]]))
@@ -18,7 +18,7 @@
   ;; if no open database, is noop
   ;; (db/close-database!)
   ;; open application global database
-  ;; (db/use-database! "jdbc:mysql://localhost/test" "user" "password")
+  (use-database! "jdbc:mysql://localhost/rssminer" "feng" "")
 
   ;; other init staff, like init-db, init-redis, ...
   (reset! server (run-server (app) {:port (cfg :port)

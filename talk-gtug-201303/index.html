@@ -1,0 +1,309 @@
+<!--
+    Google IO 2012 HTML5 Slide Template
+
+    Authors: Eric Bidelman <ebidel@gmail.com>
+    Luke Mahé <lukem@google.com>
+
+    URL: https://code.google.com/p/io-2012-slides
+  -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google IO 2012</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <!--This one seems to work all the time, but really small on ipad-->
+    <!--<meta name="viewport" content="initial-scale=0.4">-->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" media="all" href="theme/css/default.css">
+    <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+    <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+    <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+
+  </head>
+  <body style="opacity: 0">
+
+    <slides class="layout-widescreen">
+
+      <!-- <slide class="logoslide nobackground"> -->
+      <!--   <article class="flexbox vcenter"> -->
+      <!--     <span><img src="images/google_developers_logo.png"></span> -->
+      <!--   </article> -->
+      <!-- </slide> -->
+
+      <slide class="title-slide segue nobackground">
+        <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+        <img src="images/front.png"/>
+
+        <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+        <hgroup class="auto-fadein">
+          <h1 data-config-title><!-- populated from slide_config.json --></h1>
+          <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+          <p data-config-presenter><!-- populated from slide_config.json --></p>
+        </hgroup>
+      </slide>
+
+      <slide>
+        <hgroup>
+          <h2>About me</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>
+              <h3>coding for fun</h3>
+              <ul>
+                <li>Github: <a href="https://github.com/shenfeng">https://github.com/shenfeng</a></li>
+                <li>
+                  Rssminer: <a href="https://rssminer.net">https://rssminer.net</a>
+                  <ul>
+                    <li><a href="https://github.com/http-kit">http-kit</a> high performance HTTP Server(ring adapter), HTTP Client</li>
+                    <li>
+                      HTML Template: <a href="http://github.com/shenfeng/mustache.clj"> Mustache.clj</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </article>
+      </slide>
+
+      <slide>
+        <hgroup>
+          <h2>Agenda</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>A little history, backbone.js</li>
+            <li>Short introduction: Object and function in javascript</li>
+            <!-- <li>JS, the good part: Function, Object, tooling</li> -->
+            <li>The problem with OO in javascript</li>
+            <li>OO in javascript in Function and Object way</li>
+            <li>Routing and event handling (Rouing and event handling)</li>
+            <li>HTML Templating</li>
+            <li>Data exchange: JSON. short introduction of why Clojure</li>
+            <li>SASS, debugging, deploy, etc</li>
+            <li>Future work of rssminer</li>
+          </ul>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>A little history, backbone.js</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>We are using backbone in <a href="https://trakrapp.com">trakr</a></li>
+            <li>A little struggle</li>
+            <li>A random choosed project to practice it</li>
+            <li>Read backbone.js several times, patch it</li>
+            <li>Problem: Relies on Object({}), not functions</li>
+            <li>Javascript is a functional language, not OO</li>
+          </ul>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>
+            Object and function in javascript
+          </h2>
+        </hgroup>
+        <article>
+          <pre class="prettyprint" data-lang="js">
+{key: 'value', array: [1, 2, 3 ,4]}
+
+function f (a, b) {
+  return a + b;
+}
+
+var f = function (a, b) {
+  return a + b;
+}
+
+f(1, 2);
+
+(function (a, b) {
+  return a + b;
+})(1, 2);
+          </pre>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>The problem with OO in javascript</h2>
+        </hgroup>
+        <article>
+          <pre class="prettyprint" data-lang="js">
+function People(name) {
+  this.name = name;
+}
+People.prototype.setName = function(name) {
+  this.name = name;
+}
+People.prototype.say = function () {
+  console.log('name is ', this.name);
+};
+var p = new People("gtug");
+p.setName('hello gtug');
+p.say();
+
+var setName = p.setName
+setName('bad'); // setName.apply(p, ['sdfsfds'])
+p.say();
+console.log(windown.name);
+</pre>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>How to fix it with Function and Object</h2>
+        </hgroup>
+        <article>
+          <pre class="prettyprint" data-lang="js">
+function people (name) {
+  return {
+    say: console.log('hello ', name),
+    setName: function (n) { name = n; }
+  };
+}
+
+var p = people('gtug');
+var setName = p.setName();
+setName('bad');
+p.say()
+          </pre>
+          <ul>
+            <li>
+              <a href="http://shenfeng.me/javascript-namespace-private.html">
+                private var
+              </a>
+            </li>
+            <li>module (namespace) </li>
+          </ul>
+          <p>
+          </p>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>Routing and event handling</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>hash routing</li>
+            <li>Delegate</li>
+          </ul>
+          <pre class="prettyprint" data-lang="js">
+router.route({
+  '': show_welcome,
+  's/:section': show_settings,
+  'read/:id/:id?p=:page&s=:sort': read_feed,
+  'search?q=:q&tags=:tags&authors=:authors&offset=:offset': search
+});
+
+util.delegate_events($(document), {
+  'click .add-sub a.import': import_from_greader,
+  'click #add-subscription': add_subscription,
+  'click #save-settings': save_settings
+});
+          </pre>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>HTML Templating</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>A function: Template + data => HTML snippet</li>
+            <li><a href="http://mustache.github.com/">
+                Mustache</a>: simple and powerful
+            </li>
+            <li>
+              One tempate per file => better editor support
+            </li>
+            <li>
+              Generate tmpls.js from template files (inotify-watch/http-watcher)
+            </li>
+            <li>
+              <img src="images/tmpls.png"/>
+            </li>
+          </ul>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>JSON & short introduction Clojure</h2>
+        </hgroup>
+        <article>
+          JSON, javascript support it natively
+          <pre class="prettyprint" data-lang="js">
+            {key: 'alue', array: [1, 2, 3, 4]}
+          </pre>
+          <h4>Clojure</h4>
+          <ul>
+            <li>Lisp on the JVM/CLR/Javascript</li>
+            <li>Easy to learn, REPL</li>
+            <li>Performance: developer and code</li>
+            <li>Object literal {} [] #{} (JSON)</li>
+            <li>Concurrency primitive</li>
+          </ul>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>SASS, debugging, deploy, etc</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>http://sass-lang.com/</li>
+            <li>Rakefile</li>
+            <li>Google Closure Tools: compiler</li>
+            <li>Htmlcompressor</li>
+          </ul>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>Future work of rssminer</h2>
+        </hgroup>
+        <article>
+          <ul>
+            <li>Mobile, offline reading</li>
+            <li>UI: more reader friendly, learn/copy from GR</li>
+            <li>Faster</li>
+          </ul>
+        </article>
+      </slide>
+      <slide class="thank-you-slide segue nobackground">
+        <aside class="gdbar right"><img src="images/google_developers_icon_128.png"></aside>
+        <article class="flexbox vleft auto-fadein">
+          <h2>&lt;Thank You!&gt;</h2>
+          <!-- <p>Important contact information goes here.</p> -->
+        </article>
+        <p class="auto-fadein" data-config-contact>
+          <!-- populated from slide_config.json -->
+        </p>
+      </slide>
+
+      <slide class="logoslide dark nobackground">
+        <article class="flexbox vcenter">
+          <span><img src="images/end.png"></span>
+
+          <!-- <span><img src="images/google_developers_logo_white.png"></span> -->
+        </article>
+      </slide>
+
+      <slide class="backdrop"></slide>
+
+    </slides>
+
+    <!--[if IE]>
+        <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+        <script>CFInstall.check({mode: 'overlay'});</script>
+        <![endif]-->
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </body>
+</html>

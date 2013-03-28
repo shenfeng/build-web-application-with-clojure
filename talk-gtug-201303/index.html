@@ -58,10 +58,11 @@
                 <li>
                   Rssminer: <a href="https://rssminer.net">https://rssminer.net</a>
                   <ul>
-                    <li><a href="https://github.com/http-kit">http-kit</a> high performance HTTP Server(ring adapter), HTTP Client</li>
-                    <li>
-                      HTML Template: <a href="http://github.com/shenfeng/mustache.clj"> Mustache.clj</a>
-                    </li>
+                    <li>High performance HTTP server & client with WebSocke and Async <a href="https://github.com/http-kit">http-kit</a></li>
+                    <li>HTML Template: <a href="http://github.com/shenfeng/mustache.clj"> Mustache.clj</a></li>
+                    <li>Database connection pool: <a href="https://github.com/http-kit/dbcp.clj"> dbcp.clj</a></li>
+                    <li>MMSEG: <a href="https://github.com/shenfeng/mmseg">mmesg</a></li>
+                    <li>Data storage backend (planned, maybe in Go)</li>
                   </ul>
                 </li>
               </ul>
@@ -69,41 +70,35 @@
           </ul>
         </article>
       </slide>
-
       <slide>
         <hgroup>
           <h2>Agenda</h2>
         </hgroup>
         <article>
           <ul>
-            <li>A little history, backbone.js</li>
-            <li>Short introduction: Object and function in javascript</li>
-            <!-- <li>JS, the good part: Function, Object, tooling</li> -->
-            <li>The problem with OO in javascript</li>
-            <li>OO in javascript in Function and Object way</li>
-            <li>Routing and event handling(decouple code)</li>
-            <li>HTML Templating</li>
-            <li>Data exchange: JSON. short introduction of why Clojure</li>
+            <li>
+              Javascript: less is more and OO
+              <ul>
+                <li>Short tutorial: Function, Object, tooling</li>
+                <li>The problem with OO in javascript</li>
+                <li>OO with Function and Object(if can't live without OO)</li>
+              </ul>
+            </li>
+            <li>Backbone.js (or ....)</li>
+            <li>
+              <li>How Rssminer structure(decouple) code for one page JS app</li>
+              <ul>
+                <li>Routing & event handling & Module</li>
+                <li>HTML Templating (view)</li>
+                <li>Data exchange: JSON. Short introduction of Clojure</li>
+              </ul>
+            </li>
             <li>SASS, debugging, deploy, etc</li>
             <li>Future work of rssminer</li>
           </ul>
         </article>
       </slide>
-      <slide>
-        <hgroup>
-          <h2>A little history, backbone.js</h2>
-        </hgroup>
-        <article>
-          <ul>
-            <li>We are using backbone in <a href="https://trakrapp.com">trakr</a></li>
-            <li>A little struggle</li>
-            <li>A random choosed project (later become rssminer) to practice it</li>
-            <li>Read backbone.js several times, patch it</li>
-            <li>Problem: Relies on Object({}), not functions</li>
-            <li>Javascript is a functional language, not OO</li>
-          </ul>
-        </article>
-      </slide>
+
       <slide>
         <hgroup>
           <h2>
@@ -112,7 +107,7 @@
         </hgroup>
         <article>
           <pre class="prettyprint" data-lang="js">
-{key: 'value', array: [1, 2, 3 ,4]}
+var data = {key: 'value', array: [1, 2, 3 ,4]}
 
 function f (a, b) {
   return a + b;
@@ -121,10 +116,9 @@ function f (a, b) {
 var f = function (a, b) {
   return a + b;
 }
-
 f(1, 2);
 
-(function (a, b) {
+(function (a, b) { // only function scope, no {} scope
   return a + b;
 })(1, 2);
           </pre>
@@ -132,7 +126,31 @@ f(1, 2);
       </slide>
       <slide>
         <hgroup>
-          <h2>The problem with OO in javascript</h2>
+          <h2>The problem with OO in javascript (scope)</h2>
+        </hgroup>
+        <article>
+          <pre class="prettyprint" data-lang="c">
+int main(int argc, char** argv) {
+    int a = 1;
+    if (a == 10) {
+        int a = 100;
+    }
+    printf("%d\n", a); // 1
+    return 0;
+}
+          </pre>
+<pre class="prettyprint" data-lang="c">
+  var a = 1;
+  if (a=== 1) {
+     var a = 10;
+  }
+  console.log(a) // 10
+</pre>
+        </article>
+      </slide>
+      <slide>
+        <hgroup>
+          <h2>The problem with OO in javascript (this)</h2>
         </hgroup>
         <article>
           <pre class="prettyprint" data-lang="js">
@@ -140,7 +158,7 @@ function People(name) {
   this.name = name;
 }
 People.prototype.setName = function(name) {
-  this.name = name;
+  this.name = name;  // `this` is ambiguous, diff context, diff meaning
 }
 People.prototype.say = function () {
   console.log('name is ', this.name);
@@ -153,7 +171,8 @@ var setName = p.setName
 setName('bad'); // setName.apply(p, ['sdfsfds'])
 p.say();
 console.log(windown.name);
-</pre>
+
+          </pre>
         </article>
       </slide>
       <slide>
@@ -162,87 +181,154 @@ console.log(windown.name);
         </hgroup>
         <article>
           <pre class="prettyprint" data-lang="js">
-function people (name) {
-  return {
-    say: console.log('hello ', name),
-    setName: function (n) { name = n; }
+function people (name) { // name is function scope, js has function scope
+  return { // return object
+    say: function() { console.log('hello ', name) }, // function
+    setName: function (n) { name = n; } // no `this`
   };
 }
 
 var p = people('gtug');
 var setName = p.setName();
-setName('bad');
+setName('bad');  // not bad?
 p.say()
           </pre>
-          <ul>
-            <li>
-              <a href="http://shenfeng.me/javascript-namespace-private.html">
-                private var
-              </a>
-            </li>
-            <li>module (namespace) </li>
-          </ul>
-          <p>
-          </p>
         </article>
       </slide>
-      <slide>
+<slide>
         <hgroup>
-          <h2>Routing and event handling</h2>
+          <h2>Backbone.js</h2>
         </hgroup>
         <article>
           <ul>
-            <li>hash routing</li>
-            <li>Delegate</li>
+            <li>MVC:  models/collections/views </li>
+            <li>Try to do OO in javascript</li>
+            <li>Use Object & `this` heavily: <code>this.get(); this._private_var = 1</code></li>
+            <li>Underscore.js, the same author: in a functinal way</li>
+            <li>
+              Many brilliant ideas
+              <ul>
+                <li>Events on and trigger(put/sub)</li>
+                <li>Router (more later)</li>
+                <li>Events delegation (more later)</li>
+              </ul>
+            </li>
+            <li>
+              Decouple code is important. MVC is just one way of doing it
+            </li>
           </ul>
+        </article>
+</slide>
+      <slide>
+        <hgroup>
+          <h2>Routing</h2>
+        </hgroup>
+        <article>
+          <p>Hash routing (onhashchange), HTML5 history API history.pushState & replaceState</p>
           <pre class="prettyprint" data-lang="js">
+var old_page;
+function read_feed (subid, feedid, page, sort) { // plain function
+  old_page = page; // just as an example
+  // to_html and tmpls.feed explains later. blocking for simplicity
+  var snippet = to_html(tmpls.feed, fetch_data(subid, feedid, page, sort));
+  // crude and effective
+  $('#feed-conainer').empty().append(snippet); // DOM removed, how about events handling?
+}
+
 router.route({
   '': show_welcome,
   's/:section': show_settings,
   'read/:id/:id?p=:page&s=:sort': read_feed,
   'search?q=:q&tags=:tags&authors=:authors&offset=:offset': search
 });
-
-util.delegate_events($(document), {
-  'click .add-sub a.import': import_from_greader,
-  'click #add-subscription': add_subscription,
-  'click #save-settings': save_settings
-});
           </pre>
         </article>
       </slide>
-      <slide>
+<slide>
         <hgroup>
           <h2>HTML Templating</h2>
         </hgroup>
         <article>
           <ul>
-            <li>A function: Template + data => HTML snippet</li>
+            <li>to_html: Template + data => HTML snippet</li>
             <li><a href="http://mustache.github.com/">
-                Mustache</a>: simple and powerful
+                Mustache</a>: simple and powerful {{}}
             </li>
             <li>
               One tempate per file => better editor support
             </li>
             <li>
-              Generate tmpls.js from template files (inotify-watch/http-watcher)
+              Generate tmpls.js from template files (bash + inotify-watch/http-watcher)
             </li>
             <li>
               <img src="images/tmpls.png"/>
             </li>
           </ul>
         </article>
+</slide>
+<slide>
+  <hgroup>
+    <h2>Event handling (delegation)</h2>
+  </hgroup>
+  <article>
+          <p>Register all at once, and forget about it</p>
+          <pre class="prettyprint" data-lang="js">
+$(document).delegate('selector', 'click', function (e) { // docuemnt is not removed
+  // performance ?
+  // handle event
+});
+
+// a small util, place them all together, put at the bottom of the js file
+util.delegate_events($(document), {
+  'click .add-sub a.import': import_from_greader,
+  'click #add-subscription': add_subscription,
+  'click #save-settings': save_settings
+});
+
+// how to do module in js?
+          </pre>
+        </article>
       </slide>
+
+<slide>
+  <hgroup>
+    <h2>Module (Seperation of logic)</h2>
+  </hgroup>
+  <article>
+    <pre class="prettyprint" data-lang="js">
+(function () { // util.js
+  var private_var = 1;
+  var helper1 = function () { };
+  window.YOUR_NS = window.YOUR_NS || {};
+  window.YOUR_NS.utils = {
+    helper1: helper1            // export, public
+  };
+})();
+
+(function () { // app.js
+    // like java's import, c++'s using namespace
+  var utils = window.YOUR_NS.utils;
+  var utils2 = window.YOUR_NS.utils;  // rename
+  utils.helper1();              // smaple usage
+  utils2.helper1();             // smaple usage
+})();
+
+    </pre>
+  </article>
+      </slide>
+
       <slide>
         <hgroup>
-          <h2>JSON & short introduction Clojure</h2>
+          <h2>JSON & short introduction of Clojure</h2>
         </hgroup>
         <article>
-          JSON, javascript support it natively
+          Javascript support it natively. Clojure: read-json/json-str
           <pre class="prettyprint" data-lang="js">
 var a = {key: 'alue', array: [1, 2, 3, 4]}
+(let [data (read-json "{'key':'alue','array':[1,2,3,4]}")]
+   // do with data
+  )
           </pre>
-          <h4>Clojure</h4>
           <ul>
             <li>Lisp on the JVM/CLR/Javascript</li>
             <li>Easy to learn, REPL</li>
@@ -258,9 +344,9 @@ var a = {key: 'alue', array: [1, 2, 3, 4]}
         </hgroup>
         <article>
           <ul>
-            <li>http://sass-lang.com/</li>
+            <li><a href="http://sass-lang.com/">http://sass-lang.com/</a></li>
             <li>Rakefile</li>
-            <li>Google Closure Tools: compiler</li>
+            <li>Google Closure Tools: combine and minify js</li>
             <li>Htmlcompressor</li>
           </ul>
         </article>

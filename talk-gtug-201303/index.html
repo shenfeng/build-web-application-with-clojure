@@ -77,13 +77,13 @@
         <article>
           <ul>
             <li>
-              Javascript: less is more and OO
+              Javascript: Ojbect, Function, OO
               <ul>
-                <li>Short tutorial: Function, Object, tooling</li>
                 <li>The problem with OO in javascript</li>
                 <li>OO with Function and Object(if can't live without OO)</li>
               </ul>
             </li>
+            <li>One page JS app</li>
             <li>Backbone.js (or ....)</li>
             <li>
               <li>How Rssminer structure(decouple) code for one page JS app</li>
@@ -196,6 +196,27 @@ p.say()
         </article>
       </slide>
 <slide>
+    <hgroup><h2>One page JS app</h2></hgroup>
+    <article>
+      <ul>
+        <li>Just one page: Gmail & Google Reader & many more</li>
+        <li>Ajax to fetch/sent data, generate HTML in client side, update UI</li>
+        <li>Reuse: server provide one API: Browser/Mobile/Thirdparty</li>
+        <li>Faster, easier to code(sometimes)</li>
+        <li>Provide another layer of complexity; Not search engine fridenly, need more work</li>
+        <li>
+          How rssminer structure the code
+          <ul>
+            <li>Jquery and Mustache, no framework</li>
+            <li>Routing & Event handling (like controller?) </li>
+            <li>Plain javascript function</li>
+            <li>HTML templating (view?)</li>
+           </ul>
+         </li>
+       </ul>
+    </article>
+  </slide>
+<slide>
         <hgroup>
           <h2>Backbone.js</h2>
         </hgroup>
@@ -219,7 +240,8 @@ p.say()
           </ul>
         </article>
 </slide>
-      <slide>
+
+  <slide>
         <hgroup>
           <h2>Routing</h2>
         </hgroup>
@@ -244,7 +266,7 @@ router.route({
           </pre>
         </article>
       </slide>
-<slide>
+  <slide>
         <hgroup>
           <h2>HTML Templating</h2>
         </hgroup>

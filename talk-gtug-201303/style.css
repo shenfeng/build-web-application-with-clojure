@@ -48,3 +48,12 @@ code {
     width: auto;
     height: auto;
 }
+
+.resume {
+    color: #777;
+    font-size: 15px;
+}
+
+.resume a {
+    /* color: #777; */
+}

@@ -19,8 +19,9 @@ var SLIDE_CONFIG = {
   // Author information
   presenters: [{
     name: 'Feng Shen',
-    company: 'available for hire',
-    twitter: '@shenedu',
+    // company: 'available for hire',
+    // twitter: '@shenedu',
+    resume: 'http://shenfeng.me/resume/',
     www: 'http://shenfeng.me',
     weibo: '@biti',
     github: 'http://github.com/shenfeng'
